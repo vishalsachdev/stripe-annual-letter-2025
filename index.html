@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe 2025 Annual Letter — Interactive Explorer</title>
+<meta name="description" content="An interactive exploration of Stripe's 2025 annual letter by Patrick and John Collison. $1.9 trillion processed, 34% growth, and the dawn of agentic commerce.">
+<meta property="og:title" content="Stripe 2025 Annual Letter — Interactive Explorer">
+<meta property="og:description" content="$1.9 trillion. Up 34%. The sorting machine is whirring faster.">
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --stripe-purple: #635bff;
+    --stripe-purple-light: #7a73ff;
+    --stripe-purple-dark: #4b45c6;
+    --stripe-cyan: #00d4ff;
+    --stripe-green: #09bf6e;
+    --stripe-yellow: #f5be3b;
+    --stripe-orange: #ff7a59;
+    --stripe-red: #ed5f74;
+    --stripe-bg: #0a2540;
+    --stripe-bg-light: #425466;
+    --white: #ffffff;
+    --gray-50: #f6f9fc;
+    --gray-100: #e3e8ee;
+    --gray-200: #c1c9d2;
+    --gray-400: #8898aa;
+    --gray-600: #525f7f;
+    --gray-800: #32325d;
+    --gray-900: #1a1f36;
+    --section-padding: clamp(60px, 10vw, 120px);
+    --content-width: 960px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    color: var(--gray-800);
+    line-height: 1.7;
+    background: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* --- NAV --- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-100);
+    transition: transform 0.3s ease;
+  }
+  nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+  }
+  .nav-logo {
+    font-weight: 700; font-size: 20px; color: var(--stripe-purple);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-links a {
+    color: var(--gray-600); text-decoration: none; font-size: 13px;
+    font-weight: 500; padding: 6px 12px; border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--stripe-purple); background: rgba(99,91,255,0.08);
+  }
+  .nav-progress {
+    position: absolute; bottom: 0; left: 0; height: 2px;
+    background: linear-gradient(90deg, var(--stripe-purple), var(--stripe-cyan));
+    transition: width 0.15s linear; width: 0%;
+  }
+  /* Mobile hamburger */
+  .nav-hamburger {
+    display: none; background: none; border: none; cursor: pointer;
+    width: 32px; height: 32px; position: relative;
+    flex-shrink: 0;
+  }
+  .nav-hamburger span {
+    display: block; width: 20px; height: 2px;
+    background: var(--gray-600); border-radius: 2px;
+    position: absolute; left: 6px;
+    transition: all 0.3s;
+  }
+  .nav-hamburger span:nth-child(1) { top: 9px; }
+  .nav-hamburger span:nth-child(2) { top: 15px; }
+  .nav-hamburger span:nth-child(3) { top: 21px; }
+  .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg); top: 15px; }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg); top: 15px; }
+  .mobile-menu {
+    display: none; position: fixed; top: 60px; left: 0; right: 0;
+    background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 16px 24px; z-index: 99;
+    flex-direction: column; gap: 4px;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    color: var(--gray-600); text-decoration: none; font-size: 15px;
+    font-weight: 500; padding: 12px 16px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .mobile-menu a:hover, .mobile-menu a.active {
+    color: var(--stripe-purple); background: rgba(99,91,255,0.08);
+  }
+
+  /* --- HERO --- */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a2540 0%, #1c1547 40%, #0a2540 100%);
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--section-padding) 24px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(99,91,255,0.25), transparent);
+  }
+  .hero-content { position: relative; max-width: var(--content-width); text-align: center; }
+  .hero-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 20px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+    font-size: 13px; font-weight: 500; margin-bottom: 32px;
+    color: rgba(255,255,255,0.8);
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px); font-weight: 700;
+    line-height: 1.1; margin-bottom: 24px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p.hero-sub {
+    font-size: clamp(16px, 2vw, 20px); color: rgba(255,255,255,0.7);
+    max-width: 680px; margin: 0 auto 48px; line-height: 1.6;
+  }
+  .hero-roster {
+    font-size: 14px; color: rgba(255,255,255,0.45);
+    max-width: 640px; margin: 0 auto 40px;
+    line-height: 1.6;
+  }
+
+  /* --- STAT GRID --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px; margin-top: 48px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 28px 24px;
+    text-align: center;
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.1);
+  }
+  .stat-value {
+    font-size: 40px; font-weight: 700; line-height: 1;
+    color: var(--white); margin-bottom: 8px;
+  }
+  .stat-value .prefix { font-size: 28px; opacity: 0.8; }
+  .stat-value .suffix { font-size: 22px; opacity: 0.8; }
+  .stat-label {
+    font-size: 14px; color: rgba(255,255,255,0.55);
+    font-weight: 500;
+  }
+
+  /* --- SECTIONS --- */
+  section { padding: var(--section-padding) 24px; }
+  .section-inner { max-width: var(--content-width); margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--stripe-purple);
+    margin-bottom: 12px;
+  }
+  section h2 {
+    font-size: clamp(28px, 4vw, 42px); font-weight: 700;
+    line-height: 1.15; margin-bottom: 20px;
+    color: var(--gray-900);
+  }
+  section p { font-size: 17px; color: var(--gray-600); margin-bottom: 20px; }
+
+  .section--alt { background: var(--gray-50); }
+
+  /* Section connector */
+  .section-connector {
+    text-align: center; padding: 32px 24px 0;
+    font-size: 14px; color: var(--gray-400);
+    font-weight: 500; font-style: italic;
+  }
+
+  /* --- CHARTS --- */
+  .chart-container {
+    background: var(--white); border: 1px solid var(--gray-100);
+    border-radius: 16px; padding: 32px; margin: 32px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .chart-container canvas { max-height: 340px; }
+  .chart-title {
+    font-size: 18px; font-weight: 600; color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+  .chart-subtitle {
+    font-size: 13px; color: var(--gray-400); margin-bottom: 20px;
+  }
+
+  /* --- AGENTIC LEVELS --- */
+  .levels-container { margin: 40px 0; }
+  .level-tabs {
+    display: flex; gap: 4px; margin-bottom: 32px;
+    border-bottom: 2px solid var(--gray-100);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .level-tab {
+    padding: 12px 20px; cursor: pointer;
+    font-size: 14px; font-weight: 600;
+    color: var(--gray-400); border: none; background: none;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+    margin-bottom: -2px;
+  }
+  .level-tab:hover { color: var(--gray-600); }
+  .level-tab.active {
+    color: var(--stripe-purple);
+    border-bottom-color: var(--stripe-purple);
+  }
+  .level-tab[role="tab"] { outline-offset: 2px; }
+  .level-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .level-content.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .level-prompt {
+    background: var(--gray-50); border-left: 4px solid var(--stripe-purple);
+    padding: 16px 20px; border-radius: 0 12px 12px 0;
+    margin: 16px 0; font-style: italic;
+    color: var(--gray-800); font-size: 15px;
+  }
+  .level-description {
+    color: var(--gray-600); font-size: 16px; line-height: 1.7;
+  }
+  .level-badge {
+    display: inline-block; padding: 4px 12px;
+    border-radius: 8px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .level-badge.current { background: rgba(99,91,255,0.1); color: var(--stripe-purple); }
+  .level-badge.future { background: rgba(9,191,110,0.1); color: var(--stripe-green); }
+
+  /* --- KEY INSIGHT CALLOUT --- */
+  .insight {
+    background: linear-gradient(135deg, rgba(99,91,255,0.06), rgba(0,212,255,0.04));
+    border: 1px solid rgba(99,91,255,0.15);
+    border-radius: 16px; padding: 28px 32px;
+    margin: 32px 0;
+  }
+  .insight-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--stripe-purple);
+    margin-bottom: 8px;
+  }
+  .insight p {
+    font-size: 18px; color: var(--gray-800); font-weight: 500;
+    line-height: 1.6; margin-bottom: 0;
+  }
+
+  /* --- PULLQUOTE --- */
+  .pullquote {
+    border-left: 4px solid var(--stripe-purple);
+    padding: 20px 28px;
+    margin: 32px 0;
+    background: rgba(99,91,255,0.03);
+    border-radius: 0 12px 12px 0;
+  }
+  .pullquote p {
+    font-size: 19px; color: var(--gray-800); font-weight: 500;
+    line-height: 1.6; margin-bottom: 0; font-style: italic;
+  }
+  .pullquote .attribution {
+    font-size: 13px; color: var(--gray-400); font-style: normal;
+    margin-top: 8px; font-weight: 400;
+  }
+
+  /* --- INLINE METRICS --- */
+  .inline-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px; margin: 32px 0;
+  }
+  .inline-metric {
+    text-align: center; padding: 20px;
+    border-radius: 12px; background: var(--white);
+    border: 1px solid var(--gray-100);
+  }
+  .inline-metric .value {
+    font-size: 32px; font-weight: 700;
+    color: var(--stripe-purple);
+  }
+  .inline-metric .value.negative { color: var(--stripe-red); }
+  .inline-metric .value.neutral { color: var(--gray-600); }
+  .inline-metric .label {
+    font-size: 13px; color: var(--gray-400); margin-top: 4px;
+  }
+
+  /* --- TIMELINE --- */
+  .timeline { margin: 32px 0; position: relative; }
+  .timeline::before {
+    content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+    width: 2px; background: var(--gray-100);
+  }
+  .timeline-item {
+    padding-left: 52px; margin-bottom: 28px; position: relative;
+  }
+  .timeline-item::before {
+    content: ''; position: absolute; left: 14px; top: 6px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--stripe-purple); border: 3px solid var(--white);
+    box-shadow: 0 0 0 2px var(--stripe-purple);
+  }
+  .timeline-item h4 {
+    font-size: 16px; font-weight: 600; color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+  .timeline-item p { font-size: 15px; color: var(--gray-600); margin-bottom: 0; }
+
+  /* --- TOC SIDEBAR (desktop) --- */
+  .toc {
+    position: fixed; right: 24px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 50;
+  }
+  .toc a {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--gray-200);
+    transition: all 0.3s; display: block;
+    position: relative;
+  }
+  .toc a.active { background: var(--stripe-purple); transform: scale(1.4); }
+  .toc a:hover { background: var(--stripe-purple-light); }
+  .toc a .toc-tip {
+    position: absolute; right: 20px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-900); color: var(--white);
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: 6px;
+    white-space: nowrap; opacity: 0;
+    pointer-events: none; transition: opacity 0.2s;
+  }
+  .toc a:hover .toc-tip { opacity: 1; }
+
+  /* Active TOC label shown always */
+  .toc a.active .toc-tip {
+    opacity: 1; background: var(--stripe-purple);
+  }
+
+  /* --- CLOSING --- */
+  .closing {
+    background: linear-gradient(135deg, #0a2540 0%, #1c1547 40%, #0a2540 100%);
+    color: var(--white); padding: 80px 24px;
+    text-align: center; position: relative;
+  }
+  .closing::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(99,91,255,0.15), transparent);
+  }
+  .closing-inner {
+    position: relative; max-width: 700px; margin: 0 auto;
+  }
+  .closing-inner blockquote {
+    font-size: clamp(18px, 2.5vw, 22px); line-height: 1.7;
+    color: rgba(255,255,255,0.9); font-style: italic;
+    margin-bottom: 24px;
+  }
+  .closing-inner .attribution {
+    font-size: 15px; color: rgba(255,255,255,0.5);
+    font-style: normal;
+  }
+  .closing-inner .closing-text {
+    font-size: 16px; color: rgba(255,255,255,0.6);
+    margin-top: 40px; line-height: 1.7;
+  }
+
+  /* --- FOOTER --- */
+  footer {
+    background: var(--stripe-bg); color: rgba(255,255,255,0.6);
+    padding: 32px 24px; text-align: center; font-size: 13px;
+  }
+  footer a { color: var(--stripe-purple-light); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* --- SCROLL ANIMATIONS --- */
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* --- RESPONSIVE --- */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: block; }
+    .toc { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stat-card { padding: 20px 16px; }
+    .stat-value { font-size: 28px; }
+    .chart-container { padding: 20px; }
+    .level-tabs { gap: 0; }
+    .level-tab { padding: 10px 14px; font-size: 13px; }
+    .pullquote { padding: 16px 20px; }
+    .pullquote p { font-size: 17px; }
+    .insight { padding: 20px 24px; }
+    .insight p { font-size: 16px; }
+  }
+
+  @media (min-width: 769px) {
+    .nav-hamburger { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">stripe</a>
+    <div class="nav-links">
+      <a href="#sorting-machine">Sorting Machine</a>
+      <a href="#global">Global</a>
+      <a href="#stablecoins">Stablecoins</a>
+      <a href="#capital">Capital</a>
+      <a href="#revenue">Revenue</a>
+      <a href="#agentic">Agentic Commerce</a>
+      <a href="#republic">Republic</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-progress" id="progress"></div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#sorting-machine">The Sorting Machine</a>
+  <a href="#global">Global by Default</a>
+  <a href="#stablecoins">Stable Progress</a>
+  <a href="#capital">Working Capital</a>
+  <a href="#revenue">Revenue Mode</a>
+  <a href="#agentic">Agentic Commerce</a>
+  <a href="#republic">Republic of Permissions</a>
+</div>
+
+<!-- TOC dots -->
+<nav class="toc" id="toc" aria-label="Page sections"></nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">February 24, 2026 &middot; Patrick &amp; John Collison</div>
+    <h1>$1.9 Trillion. Up 34%.<br>The Machine Is Whirring.</h1>
+    <p class="hero-sub">In 2025, Stripe processed $1.9 trillion &mdash; 1.6% of global GDP. But this letter isn't really about Stripe's numbers. It's about why the gap between winning and losing businesses is wider than at any point since 1963, and what's about to change that math forever.</p>
+    <p class="hero-roster">Powering all top AI companies, 90% of the Dow Jones, 80% of the Nasdaq 100, and 25% of all new Delaware corporations via Stripe Atlas.</p>
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <div class="stat-value"><span class="prefix">$</span><span data-target="1.9" data-decimals="1" class="counter">0</span><span class="suffix">T</span></div>
+        <div class="stat-label">Total payment volume</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value"><span data-target="34" class="counter">0</span><span class="suffix">%</span></div>
+        <div class="stat-label">Growth from 2024</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value"><span data-target="5" class="counter">0</span><span class="suffix">M+</span></div>
+        <div class="stat-label">Businesses powered</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value"><span data-target="350" class="counter">0</span><span class="suffix">+</span></div>
+        <div class="stat-label">Product updates in 2025</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value"><span data-target="200" class="counter">0</span><span class="suffix">M+</span></div>
+        <div class="stat-label">Link users</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-value"><span class="prefix">$</span><span data-target="1" class="counter">0</span><span class="suffix">B</span></div>
+        <div class="stat-label">Revenue suite ARR run rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE SORTING MACHINE -->
+<section id="sorting-machine">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 1</div>
+    <h2 class="reveal">The Sorting Machine</h2>
+    <p class="reveal">At heart, competitive markets are a sorting machine. They direct profits, capital, and talent to the places of greatest impact. Historically, this sorting happened methodically. It typically took decades for a household name to be unseated or for a new entrant to reach meaningful scale.</p>
+    <p class="reveal"><strong>The sorting machine is now whirring faster:</strong> winners and losers are being anointed more quickly and more intensely.</p>
+
+    <div class="insight reveal">
+      <div class="insight-label">Key Insight</div>
+      <p>The most profitable third of publicly listed US companies now account for two-thirds of total market capitalization &mdash; the highest share since data began in 1963. The top 10% of the S&amp;P 500 by market cap account for roughly 59% of the index's total profits.</p>
+    </div>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">Net income concentration in the S&P 500</div>
+      <div class="chart-subtitle">Top 10% of S&amp;P 500 companies' share of total profits &middot; Source: FMP</div>
+      <canvas id="chart-profit-concentration"></canvas>
+    </div>
+
+    <p class="reveal">This bifurcation plays out across industries. In retail, e-commerce sales grew <strong>30%</strong> in 3 years while brick-and-mortar grew just <strong>5%</strong> (inflation-adjusted). In air travel, Delta and United accounted for nearly all US airline profits in 2025. In healthcare, hospital profit shares have contracted, but health tech is on track to exceed $110 billion in EBITDA by 2029.</p>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">US retail is bifurcating</div>
+      <div class="chart-subtitle">Real (inflation-adjusted) US sales; 2022 = 100 &middot; Source: Stripe analysis of BEA data</div>
+      <canvas id="chart-retail"></canvas>
+    </div>
+
+    <p class="reveal">Economy-wide, demand for software, computers, and data center investment drove nearly half of all US GDP growth in 2025 and will likely soon be the majority.</p>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">Computer & software demand accounts for nearly half of US growth</div>
+      <div class="chart-subtitle">Share of real potential US GDP growth by year &middot; Source: BEA, CBO, Stripe analysis</div>
+      <canvas id="chart-gdp-growth"></canvas>
+    </div>
+
+    <div class="insight reveal">
+      <div class="insight-label">The 2025 Cohort</div>
+      <p>More new companies joined Stripe in 2025 than ever before &mdash; 57% based outside the US. This cohort is growing ~50% faster than the 2024 cohort. Companies reaching $10M ARR within 3 months doubled year over year.</p>
+    </div>
+
+    <div class="inline-metrics reveal">
+      <div class="inline-metric">
+        <div class="value">60%</div>
+        <div class="label">YoY jump in iOS app releases (Dec 2025)</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">41%</div>
+        <div class="label">GitHub push growth (Q3 '24 to Q3 '25)</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">100K+</div>
+        <div class="label">Claimable sandboxes created</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">41%</div>
+        <div class="label">Atlas company formation growth</div>
+      </div>
+    </div>
+
+    <p class="reveal">Atlas companies are monetizing sooner: in 2025, <strong>20% of Atlas startups</strong> charged their first customer within 30 days, up from 8% in 2020. Stripe also acquired <strong>Metronome</strong>, which powers the intricate usage-based billing models used by companies like OpenAI, Anthropic, Confluent, and NVIDIA.</p>
+
+    <div class="pullquote reveal">
+      <p>Is 2025 an anomaly or the beginning of a new regime? Time will adjudicate, but our best guess is that the 2025 acceleration is the start of a larger inflection in entrepreneurship and creativity facilitated by advances in large language models.</p>
+    </div>
+
+    <div class="section-connector">This acceleration is global by default &darr;</div>
+  </div>
+</section>
+
+<!-- GLOBAL BY DEFAULT -->
+<section id="global" class="section--alt">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 2</div>
+    <h2 class="reveal">Global by Default</h2>
+    <p class="reveal">The country-by-country expansion model has melted away. The "domestic market" for a new generation of internet businesses is the internet itself. ChatGPT, Claude, Replit, Lovable, Base44, Vercel, Cursor, Midjourney &mdash; nearly every AI product you've heard of launched globally by default.</p>
+
+    <div class="insight reveal">
+      <div class="insight-label">Then vs Now</div>
+      <p>It took Coca-Cola 20 years to bottle its first soda in Cuba. McDonald's and Starbucks waited 27 and 16 years, respectively, to serve their first customers in Canada. Google only accepted its first GBP payment from an advertiser in the UK &mdash; a live lobster mail order firm! &mdash; in 2002, four years after launching its search product globally. Today's AI companies launch worldwide on day one.</p>
+    </div>
+
+    <div class="inline-metrics reveal">
+      <div class="inline-metric">
+        <div class="value">100+</div>
+        <div class="label">Countries for localized checkout</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">120+</div>
+        <div class="label">Payment methods supported</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">30%</div>
+        <div class="label">Revenue from non-top-10 economies</div>
+      </div>
+    </div>
+
+    <p class="reveal">Among Stripe businesses with mostly international revenue, <strong>30% of that revenue</strong> comes from countries that are neither their home market nor one of the top 10 global economies. The "long tail" is much of the dog.</p>
+
+    <div class="insight reveal">
+      <div class="insight-label">Case Study: Gamma</div>
+      <p>Gamma, a California-based AI platform used by 70 million people, joined Stripe to accept UPI payments in India. Its Indian revenue leapt 22% that same month.</p>
+    </div>
+
+    <div class="pullquote reveal">
+      <p>Ironically, the tech companies most constrained by barriers of financial geography have tended to be fintechs themselves. Twelve years after Chime launched, you can only open a new Chime account from inside the US. Even at Stripe, our Issuing product is available in only 22 countries some 7 years after launch &mdash; faster than most, but not as fast as we would like.</p>
+    </div>
+
+    <p class="reveal">The latest fintech cohort &mdash; Sling Money, DolarApp, F&eacute;lix, KAST &mdash; are building global financial apps right out of the gate. Stripe launched <strong>Financial Accounts</strong>, its first globally native product, available in 100+ countries on day one &mdash; powered in large part by stablecoins.</p>
+
+    <div class="section-connector">Speaking of stablecoins &darr;</div>
+  </div>
+</section>
+
+<!-- STABLECOINS -->
+<section id="stablecoins">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 3</div>
+    <h2 class="reveal">Stable Progress</h2>
+    <p class="reveal">It may be a crypto winter, but it's a stablecoin summer. In 2025, the price of Bitcoin dropped precipitously (down 50% from October), but stablecoin payments volume <strong>doubled</strong> to around $400 billion &mdash; 60% estimated as B2B payments.</p>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">Stablecoins decouple from crypto asset prices</div>
+      <div class="chart-subtitle">Indexed to Jan 2025 = 100 &middot; Approximate trend based on letter data</div>
+      <canvas id="chart-stablecoin"></canvas>
+    </div>
+
+    <div class="inline-metrics reveal">
+      <div class="inline-metric">
+        <div class="value">~$400B</div>
+        <div class="label">Stablecoin payments volume</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">4x</div>
+        <div class="label">Bridge volume growth</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">60%</div>
+        <div class="label">Estimated B2B share</div>
+      </div>
+    </div>
+
+    <p class="reveal">New capabilities are proliferating. A Y Combinator founder can now receive funding in stablecoins, hold them in a Stripe financial account, and pay engineers anywhere in the world. SaaS platforms are using stablecoins to collect recurring payments via a smart contract. Phantom, with 20 million monthly active users, is using Bridge to roll out stablecoin-backed cards.</p>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <h4>Bridge acquisition</h4>
+        <p>Stablecoin orchestration platform, volume more than quadrupled</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Privy acquisition</h4>
+        <p>110M+ programmable wallets for custodial &amp; non-custodial models. Companies like Ramp and Deel embed digital wallets via a single API.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Bridge + Visa partnership</h4>
+        <p>Cards that spend stablecoins like any other currency, automatically converted to local fiat</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Tempo blockchain unveiled</h4>
+        <p>Purpose-built for payments with Paradigm. Sub-second finality, dedicated payment lanes, opt-in privacy. Klarna launched KlarnaUSD on the Tempo testnet. Visa, Nubank, and Shopify are testing it.</p>
+      </div>
+    </div>
+
+    <div class="insight reveal">
+      <div class="insight-label">Looking Ahead</div>
+      <p>Agents will most likely soon be responsible for most internet transactions. We will likely need blockchains that support more than one million &mdash; or even one billion &mdash; transactions per second. Today's blockchains, designed for trading and DeFi, are not built for this: Bitcoin processes fewer than 10 transactions per second.</p>
+    </div>
+
+    <div class="section-connector">But access to capital remains the bottleneck &darr;</div>
+  </div>
+</section>
+
+<!-- CAPITAL -->
+<section id="capital" class="section--alt">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 4</div>
+    <h2 class="reveal">Working Capital's Working. Capital!</h2>
+    <p class="reveal">Since 2008, GDP per capita growth has been a sluggish <strong>1.0%</strong> in OECD countries &mdash; down from <strong>2.8%</strong> a year, on average, for the 46 prior years. A significant culprit: the sharp, global drop in capital availability following the Global Financial Crisis.</p>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">Sluggish 1.0% GDP growth in OECD countries since 2008</div>
+      <div class="chart-subtitle">Percentage change &middot; Source: OECD, Stripe analysis</div>
+      <canvas id="chart-gdp-oecd"></canvas>
+    </div>
+
+    <div class="inline-metrics reveal">
+      <div class="inline-metric">
+        <div class="value negative">-66%+</div>
+        <div class="label">Ireland bank lending to small biz (2011-2019)</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">68%</div>
+        <div class="label">Loans &gt;$1M up since 2010</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value negative">-5%</div>
+        <div class="label">Loans &lt;$1M since 2010</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value neutral">41%</div>
+        <div class="label">Small biz loan approval rate (down from 50%)</div>
+      </div>
+    </div>
+
+    <p class="reveal">Stripe Capital uses real-time revenue data for lending decisions. Businesses pay back loans as a small percentage of subsequent sales, effectively drawing working capital forward from their own growth. Funding volume grew <strong>45%</strong> from 2024 to 2025, supporting more than 81,000 businesses.</p>
+
+    <div class="chart-container reveal">
+      <div class="chart-title">Businesses with Stripe Capital offers grew 27 percentage points faster</div>
+      <div class="chart-subtitle">Deciles of growth rate change &middot; Source: Stripe randomized study</div>
+      <canvas id="chart-capital-growth"></canvas>
+    </div>
+
+    <div class="insight reveal">
+      <div class="insight-label">Impact</div>
+      <p>The fastest-growing decile of financed businesses grew more than 3x faster than comparable peers; the next decile grew nearly 100 points faster. Even businesses with low credit scores grew 11 to 18 percentage points faster after receiving financing.</p>
+    </div>
+
+    <div class="section-connector">Capital unlocks growth. But most businesses also leak revenue &darr;</div>
+  </div>
+</section>
+
+<!-- ESCAPING LOW REVENUE MODE -->
+<section id="revenue">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 5</div>
+    <h2 class="reveal">Escaping Low Revenue Mode</h2>
+    <p class="reveal">Most businesses today operate in what Stripe calls <strong>low revenue mode</strong>: running on unoptimized payments infrastructure that's leaking dollars through poor conversion, auth, and fraud prevention rates. For mature businesses, there are notoriously few guaranteed growth levers hiding in plain sight &mdash; and the most enticing don't always work out.</p>
+
+    <p class="reveal">In 2019, Gillette won a Silver Lion at Cannes for "The Best Men Can Be." That year, P&amp;G took an $8 billion write-down on the business. A campaign for Indian Railways won a Grand Prix and 6 Gold Lions at Cannes in 2025, then was shut down after 8 weeks with "no discernible increase in ticket sales."</p>
+
+    <div class="pullquote reveal">
+      <p>CEOs: splashy ad campaigns are good fun, but don't overlook the revenue growth right under your nose. Your heads of payments almost surely deserve more recognition.</p>
+    </div>
+
+    <div class="insight reveal">
+      <div class="insight-label">High Revenue Mode</div>
+      <p>A checkout that adapts to each customer. Pricing in local currency. The right local payment methods. Powered by a decade of AI investment, including the Payments Foundation Model, Stripe Radar, Optimized Checkout Suite, and Authorization Boost.</p>
+    </div>
+
+    <div class="inline-metrics reveal">
+      <div class="inline-metric">
+        <div class="value">+46%</div>
+        <div class="label">BLIK conversion uplift (Poland)</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">+31%</div>
+        <div class="label">Pix conversion uplift (Brazil)</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">+2.5pp</div>
+        <div class="label">Gatwick Airport acceptance rate</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">+2%</div>
+        <div class="label">Ro auth rate increase</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value negative">-3%</div>
+        <div class="label">Ro dispute activity decrease</div>
+      </div>
+      <div class="inline-metric">
+        <div class="value">+1pp</div>
+        <div class="label">FICO authorization rate</div>
+      </div>
+    </div>
+
+    <p class="reveal">Microsoft evaluates every payment provider monthly. Stripe delivered a meaningful increase in authorization rates using Adaptive Acceptance, card account updater, network tokens, and more. Result: Microsoft is now routing a larger share of payments through Stripe.</p>
+
+    <p class="reveal">Stripe is also testing <strong>tap-to-authenticate</strong> via NFC, where the card's chip proves the cardholder has the card in hand. DoorDash has seen meaningful conversion increases and reduced chargeback rates. New Radar models handle emerging AI-era fraud vectors &mdash; including attempts to steal AI inference through abusing free trials.</p>
+
+    <div class="section-connector">These tools matter even more when agents start buying &darr;</div>
+  </div>
+</section>
+
+<!-- AGENTIC COMMERCE -->
+<section id="agentic" class="section--alt">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 6</div>
+    <h2 class="reveal">The Five Levels of Agentic Commerce</h2>
+    <p class="reveal">The form of AI tool use most relevant to commerce: the idea that your AIs will soon be buying stuff on your behalf. Stripe finds it helpful to build up this vision in progressive levels, from form-filling to full anticipation.</p>
+
+    <div class="levels-container">
+      <div class="level-tabs" role="tablist" aria-label="Agentic commerce levels">
+        <button class="level-tab active" data-level="1" role="tab" aria-selected="true" aria-controls="level-1">Level 1</button>
+        <button class="level-tab" data-level="2" role="tab" aria-selected="false" aria-controls="level-2">Level 2</button>
+        <button class="level-tab" data-level="3" role="tab" aria-selected="false" aria-controls="level-3">Level 3</button>
+        <button class="level-tab" data-level="4" role="tab" aria-selected="false" aria-controls="level-4">Level 4</button>
+        <button class="level-tab" data-level="5" role="tab" aria-selected="false" aria-controls="level-5">Level 5</button>
+      </div>
+
+      <div class="level-content active" id="level-1" role="tabpanel">
+        <div class="level-badge current">Where we are today</div>
+        <h3 style="font-size:22px;margin-bottom:12px;color:var(--gray-900)">Eliminating Web Forms</h3>
+        <p class="level-description">You research and decide what to buy. But filling out web forms is no one's favorite way to spend time. You send a URL to your agent and it fills out your payment and shipping details, coming back to you with the confirmation.</p>
+        <div class="level-prompt">The system isn't making any decisions; it's just typing and clicking "buy" on your behalf.</div>
+      </div>
+      <div class="level-content" id="level-2" role="tabpanel">
+        <div class="level-badge current">Emerging</div>
+        <h3 style="font-size:22px;margin-bottom:12px;color:var(--gray-900)">Descriptive Search</h3>
+        <p class="level-description">You stop searching for products by specific attributes and start describing situations.</p>
+        <div class="level-prompt">"I need back-to-school supplies for a third grader in Chicago, including clothes (nothing too itchy or tight!), pencils, notebooks, and a lunch box. My son likes KPop Demon Hunters and tennis. School starts in late August."</div>
+        <p class="level-description">The system reasons across weather, materials, sizes, durability, taste, reviews, and delivery timelines. Annoyingly blunt keyword search is no longer a thing.</p>
+      </div>
+      <div class="level-content" id="level-3" role="tabpanel">
+        <div class="level-badge future">Future</div>
+        <h3 style="font-size:22px;margin-bottom:12px;color:var(--gray-900)">Persistence</h3>
+        <p class="level-description">You stop reintroducing yourself. The system already knows your preferences and requirements, inferred from previous conversations and purchases.</p>
+        <div class="level-prompt">"Find me options for back-to-school clothes for Bobby."</div>
+        <p class="level-description">You're still deciding what to buy, but you're choosing from a set of options that already reflects your taste and budget.</p>
+      </div>
+      <div class="level-content" id="level-4" role="tabpanel">
+        <div class="level-badge future">Future</div>
+        <h3 style="font-size:22px;margin-bottom:12px;color:var(--gray-900)">Delegation</h3>
+        <p class="level-description">You stop choosing altogether. The system handles the search, evaluation, and purchases on your behalf.</p>
+        <div class="level-prompt">"Get the back-to-school shopping done. Keep it under $400."</div>
+        <p class="level-description">You trust it will weigh trade-offs as you would and choose things your son will like. All you do is determine the budget. This is what most people mean today when they talk about agentic commerce.</p>
+      </div>
+      <div class="level-content" id="level-5" role="tabpanel">
+        <div class="level-badge future">Future</div>
+        <h3 style="font-size:22px;margin-bottom:12px;color:var(--gray-900)">Anticipation</h3>
+        <p class="level-description">There is no prompt. The system already knows the school calendar, your son's preferences, and your typical budget.</p>
+        <div class="level-prompt">All you do is receive a notification: here's the back-to-school list of everything that's been purchased. The things you need show up right before you need them, without you having to ask.</div>
+      </div>
+    </div>
+
+    <p class="reveal">Today, the industry hovers on the edge of levels 1 and 2. Stripe compares this moment to the mid-90s when HTTP, HTML, URLs, and DNS were establishing the structure of the internet. There was an AltaVista for every Google.</p>
+
+    <div class="insight reveal">
+      <div class="insight-label">Stripe's Agentic Commerce Stack</div>
+      <p style="font-size:16px">
+        <strong>Agentic Commerce Protocol (ACP)</strong> &mdash; developed with OpenAI. A shared technical language between AI platforms and businesses, open by design.<br><br>
+        <strong>Shared Payment Tokens</strong> &mdash; agents initiate payments without exposing credentials. Works across processors.<br><br>
+        <strong>Agentic Commerce Suite</strong> &mdash; sell across multiple AI interfaces with a single integration. Brands onboarding: Anthropologie, Urban Outfitters, Etsy, Coach, Kate Spade.<br><br>
+        <strong>Machine payments</strong> &mdash; developers charge agents directly for API calls, MCP usage, and HTTP requests using stablecoin micropayments. Agents are becoming a new customer type.<br><br>
+        <strong>Partnerships</strong> &mdash; powering the first shopping experiences inside ChatGPT. Collaborating with Microsoft to bring similar capabilities to Copilot.
+      </p>
+    </div>
+
+    <div class="pullquote reveal">
+      <p>If all goes well, the little critters won't be cooped up in walled gardens, but will be zooming down the wide-open protocol highways.</p>
+    </div>
+
+    <div class="section-connector">But will we let them? &darr;</div>
+  </div>
+</section>
+
+<!-- REPUBLIC OF PERMISSIONS -->
+<section id="republic">
+  <div class="section-inner">
+    <div class="section-label reveal">Chapter 7</div>
+    <h2 class="reveal">A Republic of Permissions</h2>
+    <p class="reveal">Today's entrepreneurs have tools and reach that prior generations of industrialists could not have fathomed. We will hopefully soon witness the combinatorial effect of human ingenuity paying out in the form of productivity gains and improved living standards everywhere.</p>
+
+    <div class="insight reveal">
+      <div class="insight-label">Joel Mokyr, 2025 Nobel Laureate</div>
+      <p>New technologies have in the past often failed, despite their economic superiority, because technological decision-making implicates not only suppliers and customers, but also a broad variety of nonmarket "aggregators" &mdash; regulators, committees, courts &mdash; that influence what is adopted.</p>
+    </div>
+
+    <p class="reveal">Mokyr wrote about the Republic of Letters in catalyzing the industrial revolution. Today, we inhabit a <strong>Republic of Permissions</strong>: a filtering sieve of nonmarket aggregators. While many of our strictures are sensibly motivated, it's more important than ever to carefully balance the benefits achieved with the possibilities foreclosed.</p>
+
+    <p class="reveal">AI could revolutionize drug discovery &mdash; but only if we make clinical trials faster and cheaper. European entrepreneurs could boost tepid economies &mdash; but only if counterproductive burdens like the EU AI Act are curtailed. Nuclear energy could usher in abundance &mdash; but only with regulatory overhaul. Autonomous transport could dramatically reduce costs &mdash; provided we don't let a slurry of local ordinances harden into a blockade.</p>
+
+    <p class="reveal">Stripe supports businesses showing what's possible: <strong>Mistral AI</strong> and <strong>Bending Spoons</strong> proving world-class European talent can puncture the regulatory permafrost. <strong>Zipline</strong> and <strong>Varda</strong> earning permissions for intricate new hardware inch by inch. <strong>Spring Health</strong> and <strong>Maven Clinic</strong> stitching together a new software layer for modern healthcare.</p>
+
+    <p class="reveal">The Stripe Press catalog is home to many of the people, stories, and models we think can contribute to the next set of improvements &mdash; the team recently celebrated one million books sold. <strong>Works in Progress</strong>, their magazine of underrated ideas to improve the world, has recently branched into print.</p>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<div class="closing">
+  <div class="closing-inner">
+    <blockquote>
+      We're reminded of the phenomenon of falling into a large black hole. If you ever experience that particular misfortune, you won't actually feel anything special at the moment you cross the event horizon: the path is locally smooth, even though the space of possible futures changes irrevocably upon crossing the threshold.
+    </blockquote>
+    <blockquote>
+      We write this letter at what may well turn out to be the advent of a different and hopefully much more beneficent singularity. While much around us in 2026 feels similar to prior years, it is also clear that the next decade will look very different to those just gone by.
+    </blockquote>
+    <p class="closing-text">
+      We are as enthusiastic as ever about how vibrant entrepreneurship and wise cultures can contribute to more successful future societies, and we hope that Stripe can play a small role.
+    </p>
+    <p class="attribution">Until next year,<br>Patrick and John</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Interactive exploration of Stripe's 2025 Annual Letter &middot; <a href="https://stripe.com/annual-updates/2025" target="_blank" rel="noopener">Read the original</a></p>
+  <p style="margin-top:6px;">Not affiliated with Stripe. Data sourced from the original letter.</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+// --- Mobile menu ---
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  });
+});
+
+// --- Scroll reveal ---
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// --- Animated counters ---
+const counters = document.querySelectorAll('.counter');
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      if (el.dataset.done) return;
+      el.dataset.done = '1';
+      const target = parseFloat(el.dataset.target);
+      const decimals = parseInt(el.dataset.decimals || '0');
+      const duration = 1500;
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (target * eased).toFixed(decimals);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target.toFixed(decimals);
+      };
+      requestAnimationFrame(step);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(el => counterObserver.observe(el));
+
+// --- Scroll: progress bar + nav hide (merged, throttled) ---
+const progressBar = document.getElementById('progress');
+const nav = document.getElementById('nav');
+let lastScroll = 0;
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(() => {
+      const cur = window.scrollY;
+      const pct = (cur / (document.body.scrollHeight - window.innerHeight)) * 100;
+      progressBar.style.width = pct + '%';
+      if (cur > lastScroll && cur > 100) {
+        nav.classList.add('hidden');
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      } else {
+        nav.classList.remove('hidden');
+      }
+      lastScroll = cur;
+      scrollTicking = false;
+    });
+    scrollTicking = true;
+  }
+});
+
+// --- Active nav link + TOC ---
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const mobileMenuLinks = document.querySelectorAll('.mobile-menu a');
+const tocContainer = document.getElementById('toc');
+
+const sectionNames = {
+  'hero': 'Overview',
+  'sorting-machine': 'Sorting Machine',
+  'global': 'Global by Default',
+  'stablecoins': 'Stablecoins',
+  'capital': 'Capital',
+  'revenue': 'Revenue Mode',
+  'agentic': 'Agentic Commerce',
+  'republic': 'Republic of Permissions'
+};
+sections.forEach(s => {
+  const a = document.createElement('a');
+  a.href = '#' + s.id;
+  a.setAttribute('aria-label', sectionNames[s.id] || s.id);
+  const tip = document.createElement('span');
+  tip.className = 'toc-tip';
+  tip.textContent = sectionNames[s.id] || s.id;
+  a.appendChild(tip);
+  tocContainer.appendChild(a);
+});
+
+const tocDots = tocContainer.querySelectorAll('a');
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      mobileMenuLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      tocDots.forEach(d => d.classList.toggle('active', d.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-40% 0px -40% 0px' });
+sections.forEach(s => sectionObserver.observe(s));
+
+// --- Level tabs ---
+const levelTabs = document.querySelectorAll('.level-tab');
+const activateTab = (tab) => {
+  levelTabs.forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  document.querySelectorAll('.level-content').forEach(c => c.classList.remove('active'));
+  tab.classList.add('active');
+  tab.setAttribute('aria-selected', 'true');
+  document.getElementById('level-' + tab.dataset.level).classList.add('active');
+};
+levelTabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => activateTab(tab));
+  tab.addEventListener('keydown', (e) => {
+    let next;
+    if (e.key === 'ArrowRight') next = levelTabs[(i + 1) % levelTabs.length];
+    if (e.key === 'ArrowLeft') next = levelTabs[(i - 1 + levelTabs.length) % levelTabs.length];
+    if (e.key === 'Home') next = levelTabs[0];
+    if (e.key === 'End') next = levelTabs[levelTabs.length - 1];
+    if (next) { next.focus(); activateTab(next); e.preventDefault(); }
+  });
+});
+
+// --- CHARTS ---
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1a1f36',
+      titleFont: { size: 13 },
+      bodyFont: { size: 13 },
+      cornerRadius: 8,
+      padding: 12,
+    }
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: { color: '#8898aa', font: { size: 12 } }
+    },
+    y: {
+      grid: { color: 'rgba(0,0,0,0.04)' },
+      ticks: { color: '#8898aa', font: { size: 12 } }
+    }
+  }
+};
+
+// Chart 1: Profit concentration — hardcoded approximate data from FMP
+new Chart(document.getElementById('chart-profit-concentration'), {
+  type: 'line',
+  data: {
+    labels: ['2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+    datasets: [{
+      label: 'Top 10% share of profits (%)',
+      data: [50, 51, 53, 54, 55, 53, 57, 55, 62, 60, 63, 56, 55, 57, 59],
+      borderColor: '#635bff',
+      borderWidth: 2.5,
+      fill: true,
+      backgroundColor: function(context) {
+        const chart = context.chart;
+        const {ctx, chartArea} = chart;
+        if (!chartArea) return 'rgba(99,91,255,0.15)';
+        const g = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        g.addColorStop(0, 'rgba(99,91,255,0.3)');
+        g.addColorStop(1, 'rgba(99,91,255,0.02)');
+        return g;
+      },
+      tension: 0.3,
+      pointRadius: 0,
+      pointHoverRadius: 6,
+      pointHoverBackgroundColor: '#635bff',
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, min: 45, max: 65, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + '%' } }
+    }
+  }
+});
+
+// Chart 2: Retail bifurcation
+new Chart(document.getElementById('chart-retail'), {
+  type: 'line',
+  data: {
+    labels: ['Q1 2022','Q3 2022','Q1 2023','Q3 2023','Q1 2024','Q3 2024','Q1 2025','Q3 2025','Q1 2026'],
+    datasets: [
+      {
+        label: 'Ecommerce / nonstore',
+        data: [100, 103, 106, 110, 114, 118, 123, 127, 130],
+        borderColor: '#635bff',
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+      },
+      {
+        label: 'Brick and mortar',
+        data: [100, 100.5, 101, 101.5, 102, 102.5, 103, 104, 105],
+        borderColor: '#8898aa',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20, font: { size: 12 } } }
+    },
+    scales: {
+      ...chartDefaults.scales,
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, maxTicksLimit: 5 } },
+      y: { ...chartDefaults.scales.y, min: 95, max: 135 }
+    }
+  }
+});
+
+// Chart 3: Computer & software GDP share — hardcoded approximate data
+const gdpYears = [
+  1970,1971,1972,1973,1974,1975,1976,1977,1978,1979,
+  1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,
+  1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,
+  2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,
+  2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,
+  2020,2021,2022,2023,2024,2025
+];
+const gdpData = [
+  8, 5, 10, 12, -3, 2, 9, 7, 11, 6,
+  3, 8, -5, 10, 15, 12, 8, 14, 10, 7,
+  5, -2, 8, 12, 15, 20, 22, 25, 23, 28,
+  30, 15, 10, 12, 14, 10, 8, 12, 10, -10,
+  15, 18, 14, 16, 12, 14, 10, 15, 18, 16,
+  -8, 22, 28, 35, 42, 46
+];
+new Chart(document.getElementById('chart-gdp-growth'), {
+  type: 'bar',
+  data: {
+    labels: gdpYears,
+    datasets: [{
+      label: 'Share of GDP growth (%)',
+      data: gdpData,
+      backgroundColor: gdpData.map((v, i) => i === gdpData.length - 1 ? '#635bff' : (v < 0 ? '#ed5f74' : '#c1c9d2')),
+      borderRadius: 2,
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      ...chartDefaults.scales,
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, maxTicksLimit: 12 } },
+      y: { ...chartDefaults.scales.y, min: -20, max: 60, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + '%' } }
+    }
+  }
+});
+
+// Chart 4: Stablecoin divergence — approximate based on letter data (BTC -50%, stablecoin vol 2x)
+new Chart(document.getElementById('chart-stablecoin'), {
+  type: 'line',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    datasets: [
+      {
+        label: 'Stablecoin payment volume (indexed)',
+        data: [100, 108, 118, 128, 138, 148, 156, 164, 172, 180, 190, 200],
+        borderColor: '#635bff',
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 0,
+        fill: true,
+        backgroundColor: 'rgba(99,91,255,0.08)',
+      },
+      {
+        label: 'Bitcoin price (indexed)',
+        data: [100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 52, 50],
+        borderColor: '#ed5f74',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        tension: 0.3,
+        pointRadius: 0,
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20, font: { size: 12 } } }
+    }
+  }
+});
+
+// Chart 5: OECD GDP growth — hardcoded approximate historical data
+const oecdYears = [
+  1961,1963,1965,1967,1969,1971,1973,1975,1977,1979,
+  1981,1983,1985,1987,1989,1991,1993,1995,1997,1999,
+  2001,2003,2005,2007,2009,2011,2013,2015,2017,2019,
+  2021,2023,2025
+];
+const oecdData = [
+  4.2, 4.5, 3.8, 2.5, 4.0, 2.8, 5.5, -0.5, 3.2, 3.0,
+  0.8, 2.5, 3.2, 3.0, 3.5, 0.5, 1.0, 2.2, 3.0, 2.8,
+  0.8, 1.5, 2.2, 2.5, -4.5, 1.5, 1.0, 1.8, 2.2, 1.5,
+  5.0, 1.2, 1.5
+];
+new Chart(document.getElementById('chart-gdp-oecd'), {
+  type: 'line',
+  data: {
+    labels: oecdYears,
+    datasets: [
+      {
+        label: 'GDP per capita growth (%)',
+        data: oecdData,
+        borderColor: '#635bff',
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 0,
+        fill: false,
+      },
+      {
+        label: 'Average (1961-2007): 2.8%',
+        data: oecdYears.map(() => 2.8),
+        borderColor: '#8898aa',
+        borderWidth: 1,
+        borderDash: [8, 4],
+        pointRadius: 0,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20, font: { size: 12 } } }
+    },
+    scales: {
+      ...chartDefaults.scales,
+      x: { ...chartDefaults.scales.x, ticks: { ...chartDefaults.scales.x.ticks, maxTicksLimit: 14 } },
+      y: { ...chartDefaults.scales.y, min: -6, max: 7, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + '%' } }
+    }
+  }
+});
+
+// Chart 6: Capital growth deciles — exact data from letter
+const capitalData = [-30, -16, -6, 3, 13, 24, 38, 59, 97, 211];
+new Chart(document.getElementById('chart-capital-growth'), {
+  type: 'bar',
+  data: {
+    labels: ['Decile 1','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','Decile 10'],
+    datasets: [
+      {
+        label: 'Growth rate change (pp)',
+        data: capitalData,
+        backgroundColor: capitalData.map(v =>
+          v < 0 ? 'rgba(237,95,116,0.5)' : v > 100 ? '#635bff' : 'rgba(99,91,255,0.5)'
+        ),
+        borderRadius: 6,
+      },
+      {
+        // 27pp average reference line drawn as a line dataset
+        label: 'Average effect: 27pp increase',
+        data: capitalData.map(() => 27),
+        type: 'line',
+        borderColor: '#8898aa',
+        borderWidth: 1.5,
+        borderDash: [6, 4],
+        pointRadius: 0,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 20, font: { size: 12 } } }
+    },
+    scales: {
+      ...chartDefaults.scales,
+      y: { ...chartDefaults.scales.y, ticks: { ...chartDefaults.scales.y.ticks, callback: v => v + 'pp' } }
+    }
+  }
+});
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
